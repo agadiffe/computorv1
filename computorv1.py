@@ -135,16 +135,19 @@ def check_equation_degree(eq_data):
 def print_eq_reduced_form(final_data):
     reduced_form = ""
     for index, (degree, coef) in enumerate(final_data.items()):
-        if coef.is_integer():
-            coef = int(coef)
-        if index == 0:
-            reduced_form += str(coef)
-        elif coef < 0:
-            reduced_form += bcolors.MAGENTA + " - " + bcolors.ENDC  + str(coef)[1:] + "*" + "X"
-        else:
-            reduced_form += bcolors.MAGENTA + " + " + bcolors.ENDC + str(coef) + "*" + "X"
-        if index > 1:
-            reduced_form += "^" + str(degree)
+        if coef != 0:
+            if coef.is_integer():
+                coef = int(coef)
+            if index == 0:
+                reduced_form += str(coef)
+            elif coef < 0:
+                reduced_form += bcolors.MAGENTA + " - " + bcolors.ENDC  + str(coef)[1:] + "*" + "X"
+            else:
+                reduced_form += bcolors.MAGENTA + " + " + bcolors.ENDC + str(coef) + "*" + "X"
+            if index > 1:
+                reduced_form += "^" + str(degree)
+    if reduced_form == "":
+        reduced_form += "0"
     reduced_form += bcolors.CYAN + " = " + bcolors.ENDC + "0"
     print bcolors.BLUE + "Reduced form: " + bcolors.ENDC + reduced_form
 
