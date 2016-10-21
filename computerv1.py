@@ -5,6 +5,17 @@ import sys
 import re
 from collections import OrderedDict
 
+class bcolors:
+    WHITE = '\033[97m'
+    CYAN = '\033[96m'
+    MAGENTA = '\033[95m'
+    BLUE = '\033[94m'
+    YELLOW = '\033[93m'
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    ENDC = '\033[0m'
+    UNDERLINE = '\033[4m'
+
 def square_root(nb):
     if nb == 0.0:
         return 0.0
@@ -35,16 +46,16 @@ def solve_equation_first_degree(a, b):
     if a == 0:
         if b == 0:
             print "The solution is:"
-            print "Undefined: All Real number are solution"
+            print bcolors.GREEN + "Undefined: All Real numbers are solutions" + bcolors.ENDC
         else:
             print "The solution is:"
-            print "Impossible: There is no solution"
+            print bcolors.GREEN + "Impossible: There is no solution" + bcolors.ENDC
     else:
         x = -b / a
         if x.is_integer():
             x = int(x)
         print "The solution is:"
-        print x
+        print bcolors.GREEN + x + bcolors.ENDC
 
 def solve_equation_second_degree(a, b, c):
     """
@@ -55,37 +66,46 @@ def solve_equation_second_degree(a, b, c):
     Δ < 0: x1 = (−b − i√(-Δ))/(2a) and x2 = (−b + i√(-Δ))/(2a)
     """
     delta = b * b - 4 * a * c
-    sqrt_delta = square_root(delta)
-    if delta.is_integer():
-        delta = int(delta)
     if delta > 0:
+        sqrt_delta = square_root(delta)
         x1 = (-b - sqrt_delta) / (2 * a)
         x2 = (-b + sqrt_delta) / (2 * a)
         if x1.is_integer():
             x1 = int(x1)
         if x2.is_integer():
             x2 = int(x2)
-        print x1
-        print x2
+        if delta.is_integer():
+            delta = int(delta)
+        print bcolors.YELLOW + "Delta = " + str(delta) + bcolors.ENDC
+        print "Discriminant is strictly positive, the two solutions are:"
+        print bcolors.GREEN + x1 + bcolors.ENDC
+        print bcolors.GREEN + x2 + bcolors.ENDC
     elif delta == 0:
         x0 = -b / (2 * a)
         if x0.is_integer():
             x0 = int(x0)
-        print x0
+        print bcolors.YELLOW + "Delta = 0" + bcolors.ENDC
+        print "Discriminant is equal to 0, the solution is:"
+        print bcolors.GREEN + x0
     else:
+        sqrt_delta = square_root(-delta)
         if a.is_integer():
             a = int(a)
         if b.is_integer():
             b = int(b)
+        if delta.is_integer():
+            delta = int(delta)
         if sqrt_delta.is_integer():
-            sqrt_delta = int(-sqrt_delta)
-            x1 = str(-b) + " - i" + sqrt_delta + " / " + str(2 * a)
-            x2 = str(-b) + " + i" + sqrt_delta + " / " + str(2 * a)
+            sqrt_delta = int(sqrt_delta)
+            x1 = str(-b) + " - i(" + sqrt_delta + ") / " + str(2 * a)
+            x2 = str(-b) + " + i(" + sqrt_delta + ") / " + str(2 * a)
         else:
-            x1 = str(-b) + " - i√(" + str(delta) + ") / " + str(2 * a)
-            x2 = str(-b) + " + i√(" + str(delta) + ") / " + str(2 * a)
-        print x1
-        print x2
+            x1 = str(-b) + " - i√(" + str(-delta) + ") / " + str(2 * a)
+            x2 = str(-b) + " + i√(" + str(-delta) + ") / " + str(2 * a)
+        print bcolors.YELLOW + "Delta = " + str(delta) + bcolors.ENDC
+        print "Discriminant is strictly negative, the two solutions are:"
+        print bcolors.GREEN + x1 + bcolors.ENDC
+        print bcolors.GREEN + x2 + bcolors.ENDC
 
 def solve_equation(final_data_eq, eq_degree):
     """
@@ -104,19 +124,27 @@ def solve_equation(final_data_eq, eq_degree):
 def check_equation_degree(eq_data):
     """
     @param: equation data returned by merge_data()
-    return: tutple with (max degree of polynomial equation, true or false)
-    error: if degree 2 and a == 0 (aX^2 + bX + c = 0) return true in tuple
+    return: max degree of polynomial equation
     """
     max_degree = 0
-    coef_max_degree = 0
     for degree, coef in eq_data.items():
         if degree > max_degree and coef != 0:
             max_degree = degree
-            coef_max_degree = coef
-    if max_degree == 2 and coef_max_degree == 0:
-        return max_degree, True
-    else:
-        return max_degree, False
+    return max_degree
+
+def print_eq_reduced_form(final_data):
+    reduced_form = ""
+    for index, (degree, coef) in enumerate(final_data.items()):
+        if coef.is_integer():
+            coef = int(coef)
+        if index == 0:
+            reduced_form += str(coef) + " * " + "X^" + str(degree)
+        elif coef < 0:
+            reduced_form += bcolors.MAGENTA + " - " + bcolors.ENDC  + str(coef)[1:] + " * " + "X^" + str(degree)
+        else:
+            reduced_form += bcolors.MAGENTA + " + " + bcolors.ENDC + str(coef) + " * " + "X^" + str(degree)
+    reduced_form += bcolors.CYAN + " = " + bcolors.ENDC + "0"
+    print bcolors.BLUE + "Reduced form: " + bcolors.ENDC + reduced_form
 
 def merge_data(left_data, right_data):
     """
@@ -156,7 +184,10 @@ def get_dict_data_eq(eq_data):
         if degree < 0:
             print "Error: degree can't be negative"
             sys.exit()
-        data[degree] = coef
+        if data.get(degree):
+            data[degree] += coef
+        else:
+            data[degree] = coef
     return data
 
 def get_operator_coef_degree(eq):
@@ -175,49 +206,40 @@ def check_eq(eq):
     return: tuple with left_side and right_side of the equation
     """
     try:
-        pattern_0 = "^((?:[+-]?\d+(?:\.\d+)?\s*\*\s*[xX]\s*\^\s*[+-]?\d+(?:\.\d+)?)(?:(?:\s*(?:[+-]\s*))[+-]?\d+(?:\.\d+)?\s*\*\s*[xX]\s*\^\s*[+-]?\d+(?:\.\d+)?)*)\s*=\s*((?:[+-]?\d+(?:\.\d+)?\s*\*\s*[xX]\s*\^\s*[+-]?\d+(?:\.\d+)?)(?:(?:\s*(?:[+-]\s*))[+-]?\d+(?:\.\d+)?\s*\*\s*[xX]\s*\^\s*[+-]?\d+(?:\.\d+)?)*)$"
+        pattern_0 = "^\s*((?:[+-]?\d+(?:\.\d+)?\s*\*\s*[xX]\s*\^\s*[+-]?\d+(?:\.\d+)?)(?:(?:\s*(?:[+-]\s*))[+-]?\d+(?:\.\d+)?\s*\*\s*[xX]\s*\^\s*[+-]?\d+(?:\.\d+)?)*)\s*=\s*((?:[+-]?\d+(?:\.\d+)?\s*\*\s*[xX]\s*\^\s*[+-]?\d+(?:\.\d+)?)(?:(?:\s*(?:[+-]\s*))[+-]?\d+(?:\.\d+)?\s*\*\s*[xX]\s*\^\s*[+-]?\d+(?:\.\d+)?)*)\s*$"
         result = re.match(pattern_0, eq)
         left_eq =  result.group(1)
         right_eq = result.group(2)
         return (left_eq, right_eq)
     except Exception:
-        print "Invalid format"
+        print bcolors.YELLOW + "Invalid format" + bcolors.ENDC
         sys.exit()
 
 def main():
     if len(sys.argv) > 1:
         try:
-            left_eq, right_eq =  check_eq(sys.argv[1])
+            left_eq, right_eq = check_eq(sys.argv[1])
             result_left = get_operator_coef_degree(left_eq)
             result_right = get_operator_coef_degree(right_eq)
             left_data = get_dict_data_eq(result_left)
             right_data = get_dict_data_eq(result_right)
             final_data = merge_data(left_data, right_data)
-            reduced_form = ""
-            for index, (degree, coef) in enumerate(final_data.items()):
-                if coef.is_integer():
-                    coef = int(coef)
-                if index == 0:
-                    reduced_form += str(coef) + " * " + "X^" + str(degree)
-                elif coef < 0:
-                    reduced_form += " - " + str(coef)[1:] + " * " + "X^" + str(degree)
-                else:
-                    reduced_form += " + " + str(coef) + " * " + "X^" + str(degree)
-            reduced_form += " = 0"
-            print "Reduced form: " + reduced_form
-            eq_degree, error_second_degree = check_equation_degree(final_data)
-            print "Polynomial degree: " + str(eq_degree)
+            print_eq_reduced_form(final_data)
+            eq_degree = check_equation_degree(final_data)
+            print bcolors.WHITE + "Polynomial degree: " + str(eq_degree) + bcolors.ENDC
             if eq_degree > 2:
-                print "The polynomial degree is stricly greater than 2, I can't solve."
-            elif error_second_degree:
-                print "Error: coefficient of degree 2 can't be equal to 0"
+                print bcolors.GREEN + "The polynomial degree is stricly greater than 2, I can't solve." + bcolors.ENDC
             else:
                 solve_equation(final_data, eq_degree)
         except Exception, e:
             print str(e)
             print "Error"
     else:
-        print "No argument"
+        print bcolors.WHITE + "usage: ./computerv1 '8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0'"
+        print "       degree can be in any order and present several time"
+        print "       all terms are in the form of : a * X^p"
+        print "         -> space doesn't matter but sign(+-) must be near to the number"
+        print "             e.g: '  -8  *    X  ^    -2  ' or '-8*X^-2'" + bcolors.ENDC
 
 if __name__ == "__main__":
     main()
