@@ -55,7 +55,7 @@ def solve_equation_first_degree(a, b):
         if x.is_integer():
             x = int(x)
         print "The solution is:"
-        print bcolors.GREEN + x + bcolors.ENDC
+        print bcolors.GREEN + str(x) + bcolors.ENDC
 
 def solve_equation_second_degree(a, b, c):
     """
@@ -78,15 +78,15 @@ def solve_equation_second_degree(a, b, c):
             delta = int(delta)
         print bcolors.YELLOW + "Delta = " + str(delta) + bcolors.ENDC
         print "Discriminant is strictly positive, the two solutions are:"
-        print bcolors.GREEN + x1 + bcolors.ENDC
-        print bcolors.GREEN + x2 + bcolors.ENDC
+        print bcolors.GREEN + str(x1) + bcolors.ENDC
+        print bcolors.GREEN + str(x2) + bcolors.ENDC
     elif delta == 0:
         x0 = -b / (2 * a)
         if x0.is_integer():
             x0 = int(x0)
         print bcolors.YELLOW + "Delta = 0" + bcolors.ENDC
         print "Discriminant is equal to 0, the solution is:"
-        print bcolors.GREEN + x0
+        print bcolors.GREEN + str(x0)
     else:
         sqrt_delta = square_root(-delta)
         if a.is_integer():
@@ -104,8 +104,8 @@ def solve_equation_second_degree(a, b, c):
             x2 = str(-b) + " + i√(" + str(-delta) + ") / " + str(2 * a)
         print bcolors.YELLOW + "Delta = " + str(delta) + bcolors.ENDC
         print "Discriminant is strictly negative, the two solutions are:"
-        print bcolors.GREEN + x1 + bcolors.ENDC
-        print bcolors.GREEN + x2 + bcolors.ENDC
+        print bcolors.GREEN + str(x1) + bcolors.ENDC
+        print bcolors.GREEN + str(x2) + bcolors.ENDC
 
 def solve_equation(final_data_eq, eq_degree):
     """
@@ -157,7 +157,7 @@ def merge_data(left_data, right_data):
         if final_data.get(degree):
             final_data[degree] -= coef
         else:
-            final_data[degree] = coef
+            final_data[degree] = -coef
     sorted_final_data = OrderedDict(sorted(final_data.items(), key=lambda t: t[0]))
     return sorted_final_data
     
@@ -235,11 +235,9 @@ def main():
             print str(e)
             print "Error"
     else:
-        print bcolors.WHITE + "usage: ./computerv1 '8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0'"
+        print bcolors.WHITE + "usage: ./computorv1 '8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0'"
         print "       degree can be in any order and present several time"
-        print "       all terms are in the form of : a * X^p"
-        print "         -> space doesn't matter but sign(+-) must be near to the number"
-        print "             e.g: '  -8  *    X  ^    -2  ' or '-8*X^-2'" + bcolors.ENDC
+        print "       Every terms are in the form of : a * X^p" + bcolors.ENDC
 
 if __name__ == "__main__":
     main()
