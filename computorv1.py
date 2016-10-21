@@ -138,11 +138,13 @@ def print_eq_reduced_form(final_data):
         if coef.is_integer():
             coef = int(coef)
         if index == 0:
-            reduced_form += str(coef) + " * " + "X^" + str(degree)
+            reduced_form += str(coef)
         elif coef < 0:
-            reduced_form += bcolors.MAGENTA + " - " + bcolors.ENDC  + str(coef)[1:] + " * " + "X^" + str(degree)
+            reduced_form += bcolors.MAGENTA + " - " + bcolors.ENDC  + str(coef)[1:] + "*" + "X"
         else:
-            reduced_form += bcolors.MAGENTA + " + " + bcolors.ENDC + str(coef) + " * " + "X^" + str(degree)
+            reduced_form += bcolors.MAGENTA + " + " + bcolors.ENDC + str(coef) + "*" + "X"
+        if index > 1:
+            reduced_form += "^" + str(degree)
     reduced_form += bcolors.CYAN + " = " + bcolors.ENDC + "0"
     print bcolors.BLUE + "Reduced form: " + bcolors.ENDC + reduced_form
 
