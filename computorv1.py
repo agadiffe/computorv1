@@ -181,10 +181,10 @@ def get_dict_data_eq(eq_data):
         try:
             degree = int(degree)
         except Exception:
-            print "Error: degree can't be a float"
+            print bcolors.YELLOW + "/!\ Error: degree can't be a float /!\\" + bcolors.ENDC
             sys.exit()
         if degree < 0:
-            print "Error: degree can't be negative"
+            print bcolors.YELLOW + "/!\ Error: degree can't be negative /!\\" + bcolors.ENDC
             sys.exit()
         if data.get(degree):
             data[degree] += coef
@@ -214,7 +214,7 @@ def check_eq(eq):
         right_eq = result.group(2)
         return (left_eq, right_eq)
     except Exception:
-        print bcolors.YELLOW + "Invalid format" + bcolors.ENDC
+        print bcolors.YELLOW + "/!\ Error: Invalid format /!\\" + bcolors.ENDC
         sys.exit()
 
 def main():
