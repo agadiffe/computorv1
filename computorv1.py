@@ -44,11 +44,10 @@ def solve_equation_first_degree(a, b):
     a == 0 and b != 0: impossible
     """
     if a == 0:
+        print "The solution is:"
         if b == 0:
-            print "The solution is:"
             print bcolors.GREEN + "Undefined: All Real numbers are solutions" + bcolors.ENDC
         else:
-            print "The solution is:"
             print bcolors.GREEN + "Impossible: There is no solution" + bcolors.ENDC
     else:
         x = -b / a
@@ -86,7 +85,7 @@ def solve_equation_second_degree(a, b, c):
             x0 = int(x0)
         print bcolors.YELLOW + "Delta = 0" + bcolors.ENDC
         print "Discriminant is equal to 0, the solution is:"
-        print bcolors.GREEN + str(x0)
+        print bcolors.GREEN + str(x0) + bcolors.ENDC
     else:
         sqrt_delta = square_root(-delta)
         if a.is_integer():
