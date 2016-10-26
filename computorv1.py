@@ -4,6 +4,7 @@
 import sys
 import re
 from collections import OrderedDict
+from fractions import Fraction
 
 class bcolors:
     WHITE = '\033[97m'
@@ -14,7 +15,6 @@ class bcolors:
     GREEN = '\033[92m'
     RED = '\033[91m'
     ENDC = '\033[0m'
-    UNDERLINE = '\033[4m'
 
 def square_root(nb):
     if nb == 0.0:
@@ -36,6 +36,12 @@ def square_root(nb):
             if B < 1.0E-15:
                 return A * M
 
+def get_integer(nb):
+    if nb.is_integer():
+        return int(nb)
+    else:
+        return Fraction(nb).limit_denominator(10000)
+
 def solve_equation_first_degree(a, b):
     """
     aX + b = 0
@@ -51,8 +57,7 @@ def solve_equation_first_degree(a, b):
             print bcolors.GREEN + "Impossible: There is no solution" + bcolors.ENDC
     else:
         x = -b / a
-        if x.is_integer():
-            x = int(x)
+        x = get_integer(x)
         print "The solution is:"
         print bcolors.GREEN + str(x) + bcolors.ENDC
 
@@ -69,31 +74,24 @@ def solve_equation_second_degree(a, b, c):
         sqrt_delta = square_root(delta)
         x1 = (-b - sqrt_delta) / (2 * a)
         x2 = (-b + sqrt_delta) / (2 * a)
-        if x1.is_integer():
-            x1 = int(x1)
-        if x2.is_integer():
-            x2 = int(x2)
-        if delta.is_integer():
-            delta = int(delta)
+        x1 = get_integer(x1)
+        x2 = get_integer(x2)
+        delta = get_integer(delta)
         print bcolors.YELLOW + "Delta = " + str(delta) + bcolors.ENDC
         print "Discriminant is strictly positive, the two solutions are:"
         print bcolors.GREEN + str(x1) + bcolors.ENDC
         print bcolors.GREEN + str(x2) + bcolors.ENDC
     elif delta == 0:
         x0 = -b / (2 * a)
-        if x0.is_integer():
-            x0 = int(x0)
+        x0 = get_integer(x0)
         print bcolors.YELLOW + "Delta = 0" + bcolors.ENDC
         print "Discriminant is equal to 0, the solution is:"
         print bcolors.GREEN + str(x0) + bcolors.ENDC
     else:
         sqrt_delta = square_root(-delta)
-        if a.is_integer():
-            a = int(a)
-        if b.is_integer():
-            b = int(b)
-        if delta.is_integer():
-            delta = int(delta)
+        a = get_integer(a)
+        b = get_integer(b)
+        delta = get_integer(delta)
         if sqrt_delta.is_integer():
             sqrt_delta = int(sqrt_delta)
             x1 = str(-b) + " - i(" + sqrt_delta + ") / " + str(2 * a)
@@ -133,17 +131,23 @@ def check_equation_degree(eq_data):
 
 def print_eq_reduced_form(final_data):
     reduced_form = ""
-    for index, (degree, coef) in enumerate(final_data.items()):
+    for degree, coef in final_data.items():
         if coef != 0:
             if coef.is_integer():
                 coef = int(coef)
-            if index == 0:
+            if degree == 0:
                 reduced_form += str(coef)
             elif coef < 0:
-                reduced_form += bcolors.MAGENTA + " - " + bcolors.ENDC  + str(coef)[1:] + "*" + "X"
+                if reduced_form == "":
+                    reduced_form += str(coef) + "*" + "X"
+                else:
+                    reduced_form += bcolors.MAGENTA + " - " + bcolors.ENDC  + str(coef)[1:] + "*" + "X"
             else:
-                reduced_form += bcolors.MAGENTA + " + " + bcolors.ENDC + str(coef) + "*" + "X"
-            if index > 1:
+                if reduced_form == "":
+                    reduced_form += str(coef) + "*" + "X"
+                else:
+                    reduced_form += bcolors.MAGENTA + " + " + bcolors.ENDC + str(coef) + "*" + "X"
+            if degree > 1:
                 reduced_form += "^" + str(degree)
     if reduced_form == "":
         reduced_form += "0"
