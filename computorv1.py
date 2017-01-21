@@ -39,6 +39,8 @@ def square_root(nb):
 def get_integer(nb):
     if nb.is_integer():
         return int(nb)
+    elif len(str(abs(nb))) > 7:
+        return nb
     else:
         return Fraction(nb).limit_denominator(10000)
 
